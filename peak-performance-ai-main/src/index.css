@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 214 95% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 30% 92%;
+    --secondary-foreground: 215 25% 15%;
+
+    --muted: 210 30% 92%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 14 90% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 214 95% 36%;
+
+    --radius: 0.75rem;
+
+    --shadow-sm: 0 2px 4px -1px hsl(214 95% 36% / 0.1);
+    --shadow-md: 0 4px 12px -2px hsl(214 95% 36% / 0.15);
+    --shadow-lg: 0 10px 30px -5px hsl(214 95% 36% / 0.2);
+    --shadow-glow: 0 0 30px hsl(214 95% 36% / 0.3);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 215 28% 10%;
+    --foreground: 210 20% 98%;
+
+    --card: 215 25% 12%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 215 25% 12%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 214 95% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 20% 18%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 215 20% 18%;
+    --muted-foreground: 215 15% 65%;
+
+    --accent: 14 90% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 50%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 215 20% 20%;
+    --input: 215 20% 20%;
+    --ring: 214 95% 50%;
+
+    --shadow-sm: 0 2px 4px -1px hsl(214 95% 50% / 0.2);
+    --shadow-md: 0 4px 12px -2px hsl(214 95% 50% / 0.25);
+    --shadow-lg: 0 10px 30px -5px hsl(214 95% 50% / 0.3);
+    --shadow-glow: 0 0 40px hsl(214 95% 50% / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
