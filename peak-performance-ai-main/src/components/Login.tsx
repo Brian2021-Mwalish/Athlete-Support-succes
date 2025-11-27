@@ -1,9 +1,10 @@
 import React from 'react';
 import { Mail, Lock, Eye, EyeOff, Activity } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Navigation } from "@/components/Navigation";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = React.useState({
     email: '',
     password: '',
@@ -43,12 +44,54 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      console.log('Login submitted:', formData);
-      alert('Login successful! (This is a demo)');
+      try {
+        const response = await fetch('http://localhost:8000/api/accounts/login/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Store tokens in localStorage
+          localStorage.setItem('access_token', data.access);
+          localStorage.setItem('refresh_token', data.refresh);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          // Navigate based on user role
+          if (data.user.is_superuser) {
+            navigate('/admin');
+          } else if (data.user.role === 'coach') {
+            navigate('/coach');
+          } else {
+            navigate('/athlete');
+          }
+        } else {
+          // Handle errors
+          if (data.email) {
+            setErrors(prev => ({ ...prev, email: data.email[0] }));
+          }
+          if (data.password) {
+            setErrors(prev => ({ ...prev, password: data.password[0] }));
+          }
+          if (data.non_field_errors) {
+            alert(data.non_field_errors[0]);
+          }
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('An error occurred during login. Please try again.');
+      }
     }
   };
 

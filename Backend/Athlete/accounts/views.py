@@ -49,7 +49,8 @@ def login_view(request):
                 'id': user.id,
                 'email': user.email,
                 'full_name': user.full_name,
-                'role': user.role
+                'role': user.role,
+                'is_superuser': user.is_superuser
             }
         }, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

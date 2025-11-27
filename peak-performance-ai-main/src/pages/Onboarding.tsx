@@ -94,8 +94,8 @@ const Onboarding = () => {
       });
 
       if (response.ok) {
-        alert('Onboarding completed! Redirecting to dashboard...');
-        navigate('/athlete'); // Or '/coach' based on user role
+        alert('Onboarding completed! Redirecting to login...');
+        navigate('/login');
       } else {
         const errorData = await response.json();
         alert('Error submitting onboarding: ' + JSON.stringify(errorData));

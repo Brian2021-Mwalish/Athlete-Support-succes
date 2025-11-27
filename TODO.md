@@ -1,7 +1,6 @@
-# TODO: Fix 404 Error for /api/accounts/register/
+# TODO: Fix Django Login Error
 
-## Steps to Complete:
-- [x] Include accounts.urls in Backend/Athlete/Athlete/urls.py under 'api/accounts/'
-- [x] Create RegisterSerializer and LoginSerializer in Backend/Athlete/accounts/serializes.py
-- [x] Add register_view and login_view in Backend/Athlete/accounts/views.py using DRF
-- [x] Test the endpoints after changes
+## Steps to Complete
+- [x] Add AUTH_USER_MODEL = 'accounts.CustomUser' to Backend/Athlete/Athlete/settings.py
+- [x] Run database migrations: cd Backend/Athlete && python manage.py migrate
+- [ ] Test the login endpoint to ensure the error is resolved
