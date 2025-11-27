@@ -61,11 +61,49 @@ const Onboarding = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log('Onboarding data:', formData);
-    // Here you would typically send the data to your backend
-    alert('Onboarding completed! Redirecting to dashboard...');
-    navigate('/athlete'); // Or '/coach' based on user role
+  const handleSubmit = async () => {
+    try {
+      // Get token from localStorage (assuming it's stored after login)
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        alert('Please log in first');
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch('http://localhost:8000/api/accounts/onboarding/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          age: parseInt(formData.age),
+          gender: formData.gender,
+          region: formData.region,
+          food_types: formData.foodTypes,
+          sports_activities: formData.sportsActivities,
+          activity_level: formData.activityLevel,
+          primary_goals: formData.primaryGoals,
+          experience_level: formData.experienceLevel,
+          medical_conditions: formData.medicalConditions,
+          preferences: formData.preferences,
+          motivation: formData.motivation,
+          timeline: formData.timeline,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Onboarding completed! Redirecting to dashboard...');
+        navigate('/athlete'); // Or '/coach' based on user role
+      } else {
+        const errorData = await response.json();
+        alert('Error submitting onboarding: ' + JSON.stringify(errorData));
+      }
+    } catch (error) {
+      console.error('Onboarding submission error:', error);
+      alert('An error occurred during onboarding submission. Please try again.');
+    }
   };
 
   const renderStepContent = () => {
@@ -291,7 +329,7 @@ const Onboarding = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
-                <steps[currentStep].icon className="w-6 h-6 mr-2" />
+                {React.createElement(steps[currentStep].icon, { className: "w-6 h-6 mr-2" })}
                 {steps[currentStep].title}
               </CardTitle>
               <CardDescription>{steps[currentStep].description}</CardDescription>
