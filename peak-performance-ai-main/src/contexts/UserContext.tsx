@@ -39,16 +39,40 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Load user from localStorage on app start
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error('Error parsing stored user:', error);
-        localStorage.removeItem('user');
-      }
+    // Load user from backend if token exists
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
+      fetch('http://localhost:8000/api/accounts/me/', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Failed to fetch user');
+          }
+        })
+        .then(userData => {
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
+        })
+        .catch(error => {
+          console.error('Error fetching user:', error);
+          // Fallback to localStorage if backend fetch fails
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              setUser(parsedUser);
+            } catch (error) {
+              console.error('Error parsing stored user:', error);
+              localStorage.removeItem('user');
+            }
+          }
+        });
     }
   }, []);
 

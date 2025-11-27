@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Check, User, Activity, Target, Heart, Calendar } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Check, User, Activity, Target, Heart, Calendar, ArrowLeft, Edit } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,10 +9,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useUser } from "@/contexts/UserContext";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useUser();
+
+  useEffect(() => {
+    if (user && user.role !== 'athlete') {
+      navigate(`/${user.role}`);
+    }
+  }, [user, navigate]);
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     age: '',
@@ -64,10 +71,12 @@ const Onboarding = () => {
 
   const handleSubmit = async () => {
     try {
+      const token = localStorage.getItem('access_token');
       const response = await fetch('http://localhost:8000/api/accounts/onboarding/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           age: parseInt(formData.age),
@@ -86,8 +95,8 @@ const Onboarding = () => {
       });
 
       if (response.ok) {
-        alert('Onboarding completed! Redirecting to login...');
-        navigate('/login');
+        alert('Onboarding completed successfully!');
+        navigate('/athlete');
       } else {
         const errorData = await response.json();
         alert('Error submitting onboarding: ' + JSON.stringify(errorData));
@@ -301,9 +310,19 @@ const Onboarding = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to AthleteHub</h1>
-            <p className="text-gray-600">Let's personalize your experience</p>
+          <div className="mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="mb-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to AthleteHub</h1>
+              <p className="text-gray-600">Let's personalize your experience</p>
+            </div>
           </div>
 
           <div className="mb-8">

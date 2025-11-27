@@ -1,80 +1,114 @@
-export const athleteData = {
-  id: "1",
-  name: "Sarah Johnson",
-  email: "sarah.j@example.com",
-  age: 28,
-  sport: "Running",
-  
-  metrics: {
-    hrv: 65,
-    sleep: 7.5,
-    hydration: 85,
-    stress: 35,
-    restingHeartRate: 52,
-    trainingLoad: 450,
-  },
-  
-  injuryRisk: 28,
-  trainingReadiness: 82,
-  recoveryScore: 78,
-  
-  weeklyProgress: [
-    { day: "Mon", readiness: 75, load: 420 },
-    { day: "Tue", readiness: 78, load: 380 },
-    { day: "Wed", readiness: 72, load: 500 },
-    { day: "Thu", readiness: 85, load: 350 },
-    { day: "Fri", readiness: 82, load: 450 },
-    { day: "Sat", readiness: 88, load: 300 },
-    { day: "Sun", readiness: 82, load: 400 },
-  ],
-  
-  todaysWorkout: {
-    type: "Interval Training",
-    duration: "45 minutes",
-    intensity: "Moderate-High",
-    description: "5 min warmup, 6x (3 min at tempo, 2 min recovery), 5 min cooldown",
-    expectedCalories: 520,
-  },
-  
-  recovery: {
-    sleepRecommendation: "Target 8-9 hours tonight",
-    hydrationTarget: "3.2L throughout the day",
-    nutritionFocus: "High protein post-workout (30g within 30 mins)",
-    activeRecovery: "Light yoga or 20-min walk recommended",
-  },
-  
-  nutrition: {
-    dailyCalories: 2400,
-    currentIntake: 1850,
-    macros: {
-      protein: { current: 110, target: 150 },
-      carbs: { current: 220, target: 280 },
-      fats: { current: 65, target: 70 },
+// Function to generate varied athlete data with randomization and time-based factors
+export const getAthleteData = () => {
+  // Base values
+  const baseHrv = 65;
+  const baseSleep = 7.5;
+  const baseHydration = 85;
+  const baseStress = 35;
+  const baseRestingHeartRate = 52;
+  const baseTrainingLoad = 450;
+  const baseInjuryRisk = 28;
+  const baseTrainingReadiness = 82;
+  const baseRecoveryScore = 78;
+
+  // Randomization factor (±5%)
+  const randomFactor = () => (Math.random() - 0.5) * 0.1;
+
+  // Time-based cyclic variation (e.g., daily cycle)
+  const timeFactor = Math.sin(Date.now() / (1000 * 60 * 60 * 24)) * 0.05;
+
+  // Apply variations
+  const variedHrv = Math.max(20, Math.min(100, baseHrv * (1 + randomFactor() + timeFactor)));
+  const variedSleep = Math.max(4, Math.min(12, baseSleep * (1 + randomFactor() + timeFactor)));
+  const variedHydration = Math.max(50, Math.min(100, baseHydration * (1 + randomFactor())));
+  const variedStress = Math.max(10, Math.min(90, baseStress * (1 + randomFactor())));
+  const variedRestingHeartRate = Math.max(40, Math.min(80, baseRestingHeartRate * (1 + randomFactor())));
+  const variedTrainingLoad = Math.max(200, Math.min(800, baseTrainingLoad * (1 + randomFactor())));
+  const variedInjuryRisk = Math.max(10, Math.min(90, baseInjuryRisk * (1 + randomFactor())));
+  const variedTrainingReadiness = Math.max(20, Math.min(100, baseTrainingReadiness * (1 + randomFactor())));
+  const variedRecoveryScore = Math.max(20, Math.min(100, baseRecoveryScore * (1 + randomFactor())));
+
+  return {
+    id: "1",
+    name: "Mwalish Brian",
+    email: "Mwalish@example.com",
+    age: 28,
+    sport: "Running",
+
+    metrics: {
+      hrv: Math.round(variedHrv),
+      sleep: parseFloat(variedSleep.toFixed(1)),
+      hydration: Math.round(variedHydration),
+      stress: Math.round(variedStress),
+      restingHeartRate: Math.round(variedRestingHeartRate),
+      trainingLoad: Math.round(variedTrainingLoad),
     },
-    mealSuggestions: [
-      {
-        meal: "Pre-Workout",
-        time: "1 hour before training",
-        suggestion: "Banana with peanut butter, or oatmeal with berries",
-      },
-      {
-        meal: "Post-Workout",
-        time: "Within 30 minutes",
-        suggestion: "Grilled chicken with quinoa and vegetables, or protein shake with fruit",
-      },
-      {
-        meal: "Dinner",
-        time: "2-3 hours before bed",
-        suggestion: "Salmon with sweet potato and broccoli",
-      },
+
+    injuryRisk: Math.round(variedInjuryRisk),
+    trainingReadiness: Math.round(variedTrainingReadiness),
+    recoveryScore: Math.round(variedRecoveryScore),
+
+    weeklyProgress: [
+      { day: "Mon", readiness: 75, load: 420 },
+      { day: "Tue", readiness: 78, load: 380 },
+      { day: "Wed", readiness: 72, load: 500 },
+      { day: "Thu", readiness: 85, load: 350 },
+      { day: "Fri", readiness: 82, load: 450 },
+      { day: "Sat", readiness: 88, load: 300 },
+      { day: "Sun", readiness: 82, load: 400 },
     ],
-  },
+
+    todaysWorkout: {
+      type: "Interval Training",
+      duration: "45 minutes",
+      intensity: "Moderate-High",
+      description: "5 min warmup, 6x (3 min at tempo, 2 min recovery), 5 min cooldown",
+      expectedCalories: 520,
+    },
+
+    recovery: {
+      sleepRecommendation: "Target 8-9 hours tonight",
+      hydrationTarget: "3.2L throughout the day",
+      nutritionFocus: "High protein post-workout (30g within 30 mins)",
+      activeRecovery: "Light yoga or 20-min walk recommended",
+    },
+
+    nutrition: {
+      dailyCalories: 2400,
+      currentIntake: 1850,
+      macros: {
+        protein: { current: 110, target: 150 },
+        carbs: { current: 220, target: 280 },
+        fats: { current: 65, target: 70 },
+      },
+      mealSuggestions: [
+        {
+          meal: "Pre-Workout",
+          time: "1 hour before training",
+          suggestion: "Banana with peanut butter, or oatmeal with berries",
+        },
+        {
+          meal: "Post-Workout",
+          time: "Within 30 minutes",
+          suggestion: "Grilled chicken with quinoa and vegetables, or protein shake with fruit",
+        },
+        {
+          meal: "Dinner",
+          time: "2-3 hours before bed",
+          suggestion: "Salmon with sweet potato and broccoli",
+        },
+      ],
+    },
+  };
 };
+
+// For backward compatibility, export a static version (though it will be varied on each import)
+export const athleteData = getAthleteData();
 
 export const coachAthletes = [
   {
     id: "1",
-    name: "Sarah Johnson",
+    name: "Mwalish Brian",
     sport: "Running",
     injuryRisk: 28,
     readiness: 82,

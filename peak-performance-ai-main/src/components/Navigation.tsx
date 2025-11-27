@@ -36,7 +36,7 @@ export const Navigation = ({ userRole, userName }: NavigationProps) => {
           <Link to="/" className="flex items-center space-x-2">
             <Activity className="w-8 h-8 text-primary" />
             <span className="text-xl font-bold text-primary">
-              AthleteAI
+              StrydeAI
             </span>
           </Link>
 
@@ -57,6 +57,13 @@ export const Navigation = ({ userRole, userName }: NavigationProps) => {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
+                  {currentUserRole !== 'coach' && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/onboarding" className="cursor-pointer">
+                        Onboarding
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
                     <LogOut className="w-4 h-4 mr-2" />

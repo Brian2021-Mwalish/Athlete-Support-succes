@@ -91,13 +91,9 @@ const Register = () => {
           const data = await response.json();
           // Store the access token
           localStorage.setItem('access_token', data.access);
-          alert('Registration successful! Redirecting...');
-          // Redirect based on role
-          if (formData.role === 'athlete') {
-            navigate('/onboarding');
-          } else {
-            navigate('/login');
-          }
+          alert('Registration successful! Redirecting to login...');
+          // Redirect to login for all users
+          navigate('/login');
         } else {
           // Handle errors
           if (data.email) {

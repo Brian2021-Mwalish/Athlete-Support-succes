@@ -41,7 +41,7 @@ const Coach = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation userRole="coach" userName="Coach Mike" />
+      <Navigation userRole="coach" />
       
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}

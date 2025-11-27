@@ -1,6 +1,15 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import CustomUser, Onboarding
+
+# Import ALL models used in serializers
+from .models import (
+    CustomUser,
+    Onboarding,
+    WorkoutLog,
+    HealthMetric,
+    NutritionLog,
+    InjuryReport
+)
 
 
 # -----------------------------
@@ -40,9 +49,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Password match check
         if attrs['password'] != attrs['confirm_password']:
             raise serializers.ValidationError({"password": "Passwords do not match."})
+
         # Prevent admin registration
         if attrs.get('role') == 'admin':
             raise serializers.ValidationError({"role": "Admin registration is not allowed."})
+
         return attrs
 
     def create(self, validated_data):
@@ -63,8 +74,11 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if email and password:
-            # Use email as username for authenticate
-            user = authenticate(request=self.context.get('request'), username=email, password=password)
+            user = authenticate(
+                request=self.context.get('request'),
+                username=email,
+                password=password
+            )
             if not user:
                 raise serializers.ValidationError({"non_field_errors": ["Invalid email or password."]})
         else:
@@ -72,3 +86,56 @@ class LoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+# -----------------------------
+# Workout Log Serializer
+# -----------------------------
+class WorkoutLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkoutLog
+        fields = [
+            'id', 'date', 'activity_type', 'duration_minutes', 'distance_km',
+            'calories_burned', 'average_heart_rate', 'max_heart_rate',
+            'notes', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']
+
+
+# -----------------------------
+# Health Metric Serializer
+# -----------------------------
+class HealthMetricSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HealthMetric
+        fields = [
+            'id', 'metric_type', 'value', 'unit', 'date_recorded',
+            'source', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']
+
+
+# -----------------------------
+# Nutrition Log Serializer
+# -----------------------------
+class NutritionLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NutritionLog
+        fields = [
+            'id', 'date', 'meal_type', 'food_items', 'calories', 'protein_g',
+            'carbs_g', 'fats_g', 'water_ml', 'notes', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']
+
+
+# -----------------------------
+# Injury Report Serializer
+# -----------------------------
+class InjuryReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InjuryReport
+        fields = [
+            'id', 'injury_type', 'severity', 'description', 'date_occurred',
+            'recovery_status', 'medical_attention', 'created_at'
+        ]
+        read_only_fields = ['id', 'created_at']

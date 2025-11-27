@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, Heart, Moon, Droplets, TrendingUp, AlertTriangle, CheckCircle, Menu, X, Home, BarChart3, Utensils, Settings, User, MapPin, Clock, Dumbbell, Zap, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,14 +7,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUser } from "@/contexts/UserContext";
-import { athleteData as dummyData } from "@/data/dummyData";
+import { getAthleteData } from "@/data/dummyData";
 
 const AthleteDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [animateDashboard, setAnimateDashboard] = useState(false);
   const { user } = useUser();
 
-  // Use user data from context, fallback to dummy data if not available
+  // Generate varied dummy data
+  const dummyData = getAthleteData();
+
+  // Use user data from context, fallback to varied dummy data if not available
   const athleteData = user ? {
     name: user.name,
     injuryRisk: user.injuryRisk || dummyData.injuryRisk,
@@ -98,6 +102,84 @@ const AthleteDashboard = () => {
     ]
   };
 
+  // Animated progress states
+  const [animatedTrainingLoad, setAnimatedTrainingLoad] = useState(0);
+  const [animatedStressLevel, setAnimatedStressLevel] = useState(0);
+  const [animatedRecoveryScore, setAnimatedRecoveryScore] = useState(0);
+  const [animatedCalories, setAnimatedCalories] = useState(0);
+  const [animatedProtein, setAnimatedProtein] = useState(0);
+  const [animatedCarbs, setAnimatedCarbs] = useState(0);
+  const [animatedFats, setAnimatedFats] = useState(0);
+  const [animatedWater, setAnimatedWater] = useState(0);
+  const [animatedInjuryRisk, setAnimatedInjuryRisk] = useState(0);
+  const [animatedHrv, setAnimatedHrv] = useState(0);
+  const [animatedSleep, setAnimatedSleep] = useState(0);
+  const [animatedHydration, setAnimatedHydration] = useState(0);
+
+  // Trigger animation on component mount
+  useEffect(() => {
+    setAnimateDashboard(true);
+  }, []);
+
+  // Animation effect for progress bars
+  useEffect(() => {
+    if (!animateDashboard) return;
+
+    const animateProgress = (setter, target, isFloat = false) => {
+      const increment = isFloat ? 0.1 : 1;
+      const steps = isFloat ? Math.ceil(target / increment) : target;
+      let current = 0;
+      let count = 0;
+      const timer = setInterval(() => {
+        count++;
+        current = increment * count;
+        if (current >= target) {
+          setter(target);
+          clearInterval(timer);
+        } else {
+          setter(isFloat ? parseFloat(current.toFixed(1)) : Math.floor(current));
+        }
+      }, 1000); // Update every 1000ms (1 second) for slow counting
+    };
+
+    // Reset animated values to 0 before animating
+    setAnimatedTrainingLoad(0);
+    setAnimatedStressLevel(0);
+    setAnimatedRecoveryScore(0);
+    setAnimatedCalories(0);
+    setAnimatedProtein(0);
+    setAnimatedCarbs(0);
+    setAnimatedFats(0);
+    setAnimatedWater(0);
+    setAnimatedInjuryRisk(0);
+    setAnimatedHrv(0);
+    setAnimatedSleep(0);
+    setAnimatedHydration(0);
+
+    // Animate training load metrics
+    animateProgress(setAnimatedTrainingLoad, athleteData.trainingLoad);
+    animateProgress(setAnimatedStressLevel, athleteData.stressLevel);
+    animateProgress(setAnimatedRecoveryScore, athleteData.recoveryScore);
+
+    // Animate nutrition metrics
+    animateProgress(setAnimatedCalories, nutritionData.dailyCalories);
+    animateProgress(setAnimatedProtein, nutritionData.protein);
+    animateProgress(setAnimatedCarbs, nutritionData.carbs);
+    animateProgress(setAnimatedFats, nutritionData.fats);
+    animateProgress(setAnimatedWater, nutritionData.waterIntake);
+
+    // Animate metric card values with staggered delays
+    setTimeout(() => animateProgress(setAnimatedInjuryRisk, athleteData.injuryRisk), 0);
+    setTimeout(() => animateProgress(setAnimatedHrv, athleteData.hrv), 200);
+    setTimeout(() => animateProgress(setAnimatedSleep, athleteData.sleepHours, true), 400); // Float for sleep hours
+    setTimeout(() => animateProgress(setAnimatedHydration, athleteData.hydration), 600);
+    // Animate metric card values
+    animateProgress(setAnimatedInjuryRisk, athleteData.injuryRisk);
+    animateProgress(setAnimatedHrv, athleteData.hrv);
+    animateProgress(setAnimatedSleep, athleteData.sleepHours, true); // Float for sleep hours
+    animateProgress(setAnimatedHydration, athleteData.hydration);
+  }, [animateDashboard, user]); // Depend on animateDashboard and user
+
   const getRiskColor = (risk) => {
     if (risk < 30) return 'text-green-500';
     if (risk < 70) return 'text-yellow-500';
@@ -116,7 +198,7 @@ const AthleteDashboard = () => {
     return 'text-red-500';
   };
 
-  const MetricCard = ({ icon: Icon, title, value, subtitle, color }) => (
+  const MetricCard = ({ icon: Icon, title, value, subtitle, color, animatedValue }: { icon: any; title: string; value: string; subtitle: string; color: string; animatedValue?: string | number }) => (
     <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-center justify-between mb-4">
         <div className={`p-3 rounded-lg ${color} bg-opacity-10`}>
@@ -124,7 +206,7 @@ const AthleteDashboard = () => {
         </div>
       </div>
       <h3 className="text-gray-600 text-sm font-medium mb-1">{title}</h3>
-      <p className={`text-3xl font-bold ${color} mb-1`}>{value}</p>
+      <p className={`text-3xl font-bold ${color} mb-1`}>{animatedValue !== undefined ? animatedValue : value}</p>
       <p className="text-gray-500 text-sm">{subtitle}</p>
     </div>
   );
@@ -154,12 +236,15 @@ const AthleteDashboard = () => {
         <div className="p-6">
           <div className="flex items-center gap-2 mb-8">
             <Activity className="w-8 h-8 text-blue-400" />
-            <h1 className="text-xl font-bold">AthleteAI</h1>
+            <h1 className="text-xl font-bold">StrydeAI</h1>
           </div>
           
           <nav className="space-y-2">
-            <button 
-              onClick={() => setActiveTab('dashboard')}
+            <button
+              onClick={() => {
+                setActiveTab('dashboard');
+                setAnimateDashboard(true);
+              }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'dashboard' ? 'bg-blue-600' : 'hover:bg-gray-800'}`}
             >
               <Home className="w-5 h-5" />
@@ -208,13 +293,14 @@ const AthleteDashboard = () => {
         <header className="bg-white shadow-sm sticky top-0 z-10">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
               <div>
+                <p className="text-lg text-gray-600">Welcome, {athleteData.name}!</p>
                 <h2 className="text-2xl font-bold text-gray-800">
                   {activeTab === 'dashboard' ? 'Performance Dashboard' : activeTab === 'nutrition' ? 'Nutrition Tracker' : 'Stress Map'}
                 </h2>
@@ -230,6 +316,12 @@ const AthleteDashboard = () => {
                   {athleteData.readinessScore}%
                 </p>
               </div>
+              <Link to="/onboarding">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Onboarding
+                </Button>
+              </Link>
               <Link to="/">
                 <Button variant="outline" className="flex items-center gap-2">
                   <LogOut className="w-4 h-4" />
@@ -268,33 +360,37 @@ const AthleteDashboard = () => {
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <MetricCard 
+              <MetricCard
                 icon={AlertTriangle}
                 title="Injury Risk"
                 value={`${athleteData.injuryRisk}%`}
                 subtitle="Current risk level"
                 color={getRiskColor(athleteData.injuryRisk)}
+                animatedValue={animateDashboard ? `${animatedInjuryRisk}%` : undefined}
               />
-              <MetricCard 
+              <MetricCard
                 icon={Heart}
                 title="HRV Score"
-                value={athleteData.hrv}
+                value={athleteData.hrv.toString()}
                 subtitle="Heart Rate Variability"
                 color="text-purple-500"
+                animatedValue={animateDashboard ? animatedHrv.toString() : undefined}
               />
-              <MetricCard 
+              <MetricCard
                 icon={Moon}
                 title="Sleep Quality"
                 value={`${athleteData.sleepHours}h`}
                 subtitle="Last night"
                 color="text-indigo-500"
+                animatedValue={animateDashboard ? `${animatedSleep}h` : undefined}
               />
-              <MetricCard 
+              <MetricCard
                 icon={Droplets}
                 title="Hydration"
                 value={`${athleteData.hydration}%`}
                 subtitle="Daily target"
                 color="text-cyan-500"
+                animatedValue={animateDashboard ? `${animatedHydration}%` : undefined}
               />
             </div>
 
@@ -306,36 +402,36 @@ const AthleteDashboard = () => {
                   <div>
                     <div className="flex justify-between mb-2">
                       <span className="text-sm font-medium">Current Load</span>
-                      <span className="text-sm text-gray-600">{athleteData.trainingLoad}%</span>
+                      <span className="text-sm text-gray-600">{animatedTrainingLoad}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-blue-500 h-3 rounded-full"
-                        style={{ width: `${athleteData.trainingLoad}%` }}
+                      <div
+                        className="bg-blue-500 h-3 rounded-full transition-all duration-1000"
+                        style={{ width: `${animatedTrainingLoad}%` }}
                       />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between mb-2">
                       <span className="text-sm font-medium">Stress Level</span>
-                      <span className="text-sm text-gray-600">{athleteData.stressLevel}%</span>
+                      <span className="text-sm text-gray-600">{animatedStressLevel}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-orange-500 h-3 rounded-full"
-                        style={{ width: `${athleteData.stressLevel}%` }}
+                      <div
+                        className="bg-orange-500 h-3 rounded-full transition-all duration-1000"
+                        style={{ width: `${animatedStressLevel}%` }}
                       />
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between mb-2">
                       <span className="text-sm font-medium">Recovery Score</span>
-                      <span className="text-sm text-gray-600">{athleteData.recoveryScore}%</span>
+                      <span className="text-sm text-gray-600">{animatedRecoveryScore}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-green-500 h-3 rounded-full"
-                        style={{ width: `${athleteData.recoveryScore}%` }}
+                      <div
+                        className="bg-green-500 h-3 rounded-full transition-all duration-1000"
+                        style={{ width: `${animatedRecoveryScore}%` }}
                       />
                     </div>
                   </div>
@@ -395,7 +491,7 @@ const AthleteDashboard = () => {
                     </div>
                   </div>
                 </div>
-                <NutritionProgress label="Water Intake" current={nutritionData.waterIntake} target={nutritionData.targetWater} unit="L" />
+                <NutritionProgress label="Water Intake" current={animatedWater} target={nutritionData.targetWater} unit="L" />
                 <p className="text-sm text-gray-600 mt-2">Goal: {nutritionData.targetWater}L per day</p>
               </div>
 

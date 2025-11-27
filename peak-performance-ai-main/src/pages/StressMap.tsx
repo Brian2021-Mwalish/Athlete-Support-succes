@@ -53,9 +53,11 @@ const StressMap = () => {
   };
 
   const getStressColor = (level: number) => {
-    if (level < 30) return "bg-green-500";
-    if (level < 50) return "bg-yellow-500";
-    return "bg-red-500";
+    // Human skin tone colors with stress overlay
+    const baseSkin = "#D4A574"; // Base skin tone
+    if (level < 30) return `fill-[${baseSkin}]`; // Low stress - normal skin
+    if (level < 50) return "fill-[#E6B17A]"; // Medium stress - slightly warmer
+    return "fill-[#F4C2A1]"; // High stress - stressed skin tone
   };
 
   const getStressLabel = (level: number) => {
@@ -913,16 +915,16 @@ const StressMap = () => {
                 <CardContent>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-green-500 rounded"></div>
-                      <span className="text-sm">Low Stress (0-29)</span>
+                      <div className="w-4 h-4 rounded" style={{ backgroundColor: "#D4A574" }}></div>
+                      <span className="text-sm">Low Stress (0-29) - Normal Skin Tone</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                      <span className="text-sm">Medium Stress (30-49)</span>
+                      <div className="w-4 h-4 rounded" style={{ backgroundColor: "#E6B17A" }}></div>
+                      <span className="text-sm">Medium Stress (30-49) - Slightly Warmer</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-red-500 rounded"></div>
-                      <span className="text-sm">High Stress (50+)</span>
+                      <div className="w-4 h-4 rounded" style={{ backgroundColor: "#F4C2A1" }}></div>
+                      <span className="text-sm">High Stress (50+) - Stressed Skin Tone</span>
                     </div>
                   </div>
                 </CardContent>
