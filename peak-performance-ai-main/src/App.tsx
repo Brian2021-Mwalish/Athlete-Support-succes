@@ -7,6 +7,9 @@ import Index from "./pages/Index";
 import Athlete from "./pages/Athlete";
 import Coach from "./pages/Coach";
 import Admin from "./pages/Admin";
+import StressMap from "./pages/StressMap";
+import Register from "./pages/Register"; // <-- NEW
+import Login from "./pages/Login"; // <-- NEW
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,8 +23,11 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/athlete" element={<Athlete />} />
+          <Route path="/stress-map" element={<StressMap />} />
           <Route path="/coach" element={<Coach />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/register" element={<Register />} /> {/* NEW ROUTE */}
+          <Route path="/login" element={<Login />} /> {/* NEW ROUTE */}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

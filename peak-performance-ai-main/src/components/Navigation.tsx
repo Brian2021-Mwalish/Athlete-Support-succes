@@ -57,14 +57,11 @@ export const Navigation = ({ userRole, userName }: NavigationProps) => {
             
             {!userRole && (
               <div className="flex items-center space-x-2">
-                <Link to="/athlete">
-                  <Button variant="ghost">Athlete Login</Button>
+                <Link to="/register">
+                  <Button variant="outline">Register</Button>
                 </Link>
-                <Link to="/coach">
-                  <Button variant="ghost">Coach Login</Button>
-                </Link>
-                <Link to="/admin">
-                  <Button variant="ghost">Admin Login</Button>
+                <Link to="/login">
+                  <Button variant="ghost">Login</Button>
                 </Link>
               </div>
             )}
