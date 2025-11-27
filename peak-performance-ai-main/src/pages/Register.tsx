@@ -1,5 +1,6 @@
 import React from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Activity } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Navigation } from "@/components/Navigation";
 
 const Register = () => {
@@ -331,9 +332,9 @@ const Register = () => {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Already have an account?{' '}
-            <span className="text-blue-600 hover:text-blue-700 font-semibold cursor-pointer">
+            <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
               Sign in
-            </span>
+            </Link>
           </p>
         </div>
       </div>

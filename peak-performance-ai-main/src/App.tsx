@@ -9,7 +9,7 @@ import Coach from "./pages/Coach";
 import Admin from "./pages/Admin";
 import StressMap from "./pages/StressMap";
 import Register from "./pages/Register"; // <-- NEW
-import Login from "./pages/Login"; // <-- NEW
+import Login from "./components/Login"; // <-- NEW
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
