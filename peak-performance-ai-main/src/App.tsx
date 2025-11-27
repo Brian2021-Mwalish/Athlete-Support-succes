@@ -9,6 +9,7 @@ import Coach from "./pages/Coach";
 import Admin from "./pages/Admin";
 import StressMap from "./pages/StressMap";
 import Register from "./pages/Register"; // <-- NEW
+import Onboarding from "./pages/Onboarding"; // <-- NEW
 import Login from "./components/Login"; // <-- NEW
 import NotFound from "./pages/NotFound";
 

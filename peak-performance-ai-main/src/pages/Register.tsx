@@ -63,12 +63,50 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      console.log('Form submitted:', formData);
-      alert('Registration successful! (This is a demo)');
+      try {
+        const response = await fetch('http://localhost:8000/api/accounts/register/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            full_name: formData.fullName,
+            email: formData.email,
+            password: formData.password,
+            confirm_password: formData.confirmPassword,
+            role: formData.role,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Registration successful! Redirecting to onboarding...');
+          // Redirect to onboarding page
+          window.location.href = '/onboarding';
+        } else {
+          // Handle errors
+          if (data.email) {
+            setErrors(prev => ({ ...prev, email: data.email[0] }));
+          }
+          if (data.password) {
+            setErrors(prev => ({ ...prev, password: data.password[0] }));
+          }
+          if (data.full_name) {
+            setErrors(prev => ({ ...prev, fullName: data.full_name[0] }));
+          }
+          if (data.non_field_errors) {
+            alert(data.non_field_errors[0]);
+          }
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        alert('An error occurred during registration. Please try again.');
+      }
     }
   };
 
@@ -111,7 +149,7 @@ const Register = () => {
                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                     ${errors.fullName ? 'border-red-500' : 'border-gray-300'}
                   `}
-                  placeholder="John Doe"
+                  placeholder="Mwalish Brian"
                 />
               </div>
               {errors.fullName && (
@@ -139,7 +177,7 @@ const Register = () => {
                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                     ${errors.email ? 'border-red-500' : 'border-gray-300'}
                   `}
-                  placeholder="john@example.com"
+                  placeholder="mwalish2021@gmail.com"
                 />
               </div>
               {errors.email && (
