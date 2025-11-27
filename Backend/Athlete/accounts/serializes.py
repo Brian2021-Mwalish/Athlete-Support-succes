@@ -2,6 +2,11 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import CustomUser, Onboarding
 
+class OnboardingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Onboarding
+        fields = ['age', 'gender', 'region', 'food_types', 'sports_activities', 'activity_level', 'primary_goals', 'experience_level', 'medical_conditions', 'preferences', 'motivation', 'timeline']
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     confirm_password = serializers.CharField(write_only=True)

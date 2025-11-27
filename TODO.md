@@ -1,11 +1,7 @@
-# TODO: Implement Onboarding Page for Athletes and Coaches
+# TODO: Fix 404 Error for /api/accounts/register/
 
-## Tasks
-- [x] Create Onboarding.tsx page with multi-step form based on provided plan
-- [x] Add /onboarding route to App.tsx
-- [x] Modify Register.tsx to redirect to /onboarding after successful registration
-- [x] Implement form validation and submission logic
-- [x] Add Onboarding model to backend with athlete-only access
-- [x] Add OnboardingSerializer, OnboardingView, and URL
-- [ ] Test the flow from registration to onboarding
-- [ ] Run migrations for new Onboarding model
+## Steps to Complete:
+- [x] Include accounts.urls in Backend/Athlete/Athlete/urls.py under 'api/accounts/'
+- [x] Create RegisterSerializer and LoginSerializer in Backend/Athlete/accounts/serializes.py
+- [x] Add register_view and login_view in Backend/Athlete/accounts/views.py using DRF
+- [x] Test the endpoints after changes
