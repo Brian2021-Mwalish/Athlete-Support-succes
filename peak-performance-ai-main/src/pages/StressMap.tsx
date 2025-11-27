@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { athleteData } from "@/data/dummyData";
+import { useUser } from "@/contexts/UserContext";
 import {
   Activity,
   AlertTriangle,
@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 
 const StressMap = () => {
+  const { user } = useUser();
+
   // Mock stress data for different body parts
   const stressData = {
     front: {
@@ -86,12 +88,12 @@ const StressMap = () => {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background">
-        <Navigation userRole="athlete" userName={athleteData.name} />
+        <Navigation />
 
         <main className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-foreground mb-2">Stress Map</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Welcome back, {user?.name || "Athlete"}!</h1>
             <p className="text-lg text-muted-foreground">
               Visualize your body's stress levels and get personalized recovery recommendations
             </p>

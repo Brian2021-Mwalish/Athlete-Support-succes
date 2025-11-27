@@ -4,18 +4,29 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .models import Onboarding, CustomUser
-from .serializes import OnboardingSerializer, RegisterSerializer, LoginSerializer
+from rest_framework.exceptions import PermissionDenied
 
+from .models import Onboarding, CustomUser
+from .serializers import OnboardingSerializer, RegisterSerializer, LoginSerializer
+
+
+# -----------------------------
+# Onboarding View
+# -----------------------------
 class OnboardingView(generics.CreateAPIView):
     serializer_class = OnboardingSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         if self.request.user.role != 'athlete':
-            return Response({"error": "Only athletes can submit onboarding data."}, status=status.HTTP_403_FORBIDDEN)
+            # Raise an exception for unauthorized users
+            raise PermissionDenied("Only athletes can submit onboarding data.")
         serializer.save(user=self.request.user)
 
+
+# -----------------------------
+# Register View
+# -----------------------------
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_view(request):
@@ -35,10 +46,15 @@ def register_view(request):
         }, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+# -----------------------------
+# Login View
+# -----------------------------
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    serializer = LoginSerializer(data=request.data)
+    # Include context so serializers can access request
+    serializer = LoginSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         user = serializer.validated_data['user']
         refresh = RefreshToken.for_user(user)
@@ -53,4 +69,7 @@ def login_view(request):
                 'is_superuser': user.is_superuser
             }
         }, status=status.HTTP_200_OK)
+    
+    # Debug: log errors for troubleshooting
+    print("Login serializer errors:", serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

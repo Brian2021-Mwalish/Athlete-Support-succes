@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 
 const Onboarding = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     age: '',
@@ -63,19 +64,10 @@ const Onboarding = () => {
 
   const handleSubmit = async () => {
     try {
-      // Get token from localStorage (assuming it's stored after login)
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        alert('Please log in first');
-        navigate('/login');
-        return;
-      }
-
       const response = await fetch('http://localhost:8000/api/accounts/onboarding/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           age: parseInt(formData.age),

@@ -1,21 +1,40 @@
 import React, { useState } from 'react';
-import { Activity, Heart, Moon, Droplets, TrendingUp, AlertTriangle, CheckCircle, Menu, X, Home, BarChart3, Utensils, Settings, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Activity, Heart, Moon, Droplets, TrendingUp, AlertTriangle, CheckCircle, Menu, X, Home, BarChart3, Utensils, Settings, User, MapPin, Clock, Dumbbell, Zap, LogOut } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useUser } from "@/contexts/UserContext";
+import { athleteData as dummyData } from "@/data/dummyData";
 
 const AthleteDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const { user } = useUser();
 
-  // Dummy athlete data
-  const athleteData = {
-    name: "John Athlete",
-    injuryRisk: 35,
-    readinessScore: 78,
-    hrv: 65,
-    sleepHours: 7.5,
-    hydration: 82,
-    trainingLoad: 68,
-    stressLevel: 45,
-    recoveryScore: 72
+  // Use user data from context, fallback to dummy data if not available
+  const athleteData = user ? {
+    name: user.name,
+    injuryRisk: user.injuryRisk || dummyData.injuryRisk,
+    readinessScore: user.trainingReadiness || dummyData.trainingReadiness,
+    hrv: user.metrics?.hrv || dummyData.metrics.hrv,
+    sleepHours: user.metrics?.sleep || dummyData.metrics.sleep,
+    hydration: user.metrics?.hydration || dummyData.metrics.hydration,
+    trainingLoad: user.metrics?.trainingLoad || dummyData.metrics.trainingLoad,
+    stressLevel: user.metrics?.stress || dummyData.metrics.stress,
+    recoveryScore: user.recoveryScore || dummyData.recoveryScore
+  } : {
+    name: dummyData.name,
+    injuryRisk: dummyData.injuryRisk,
+    readinessScore: dummyData.trainingReadiness,
+    hrv: dummyData.metrics.hrv,
+    sleepHours: dummyData.metrics.sleep,
+    hydration: dummyData.metrics.hydration,
+    trainingLoad: dummyData.metrics.trainingLoad,
+    stressLevel: dummyData.metrics.stress,
+    recoveryScore: dummyData.recoveryScore
   };
 
   // Nutrition dummy data
@@ -146,13 +165,19 @@ const AthleteDashboard = () => {
               <Home className="w-5 h-5" />
               <span>Dashboard</span>
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('nutrition')}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'nutrition' ? 'bg-blue-600' : 'hover:bg-gray-800'}`}
             >
               <Utensils className="w-5 h-5" />
               <span>Nutrition</span>
             </button>
+            <Link to="/stress-map">
+              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                <MapPin className="w-5 h-5" />
+                <span>Stress Map</span>
+              </button>
+            </Link>
             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors">
               <BarChart3 className="w-5 h-5" />
               <span>Analytics</span>
@@ -191,7 +216,7 @@ const AthleteDashboard = () => {
               </button>
               <div>
                 <h2 className="text-2xl font-bold text-gray-800">
-                  {activeTab === 'dashboard' ? 'Performance Dashboard' : 'Nutrition Tracker'}
+                  {activeTab === 'dashboard' ? 'Performance Dashboard' : activeTab === 'nutrition' ? 'Nutrition Tracker' : 'Stress Map'}
                 </h2>
                 <p className="text-gray-600 text-sm">
                   {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
@@ -205,6 +230,12 @@ const AthleteDashboard = () => {
                   {athleteData.readinessScore}%
                 </p>
               </div>
+              <Link to="/">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              </Link>
             </div>
           </div>
         </header>

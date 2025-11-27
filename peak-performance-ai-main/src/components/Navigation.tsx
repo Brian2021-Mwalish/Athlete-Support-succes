@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Activity, LogOut, User } from "lucide-react";
 import {
@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUser } from "@/contexts/UserContext";
 
 interface NavigationProps {
   userRole?: "athlete" | "coach" | "admin";
@@ -16,6 +17,18 @@ interface NavigationProps {
 }
 
 export const Navigation = ({ userRole, userName }: NavigationProps) => {
+  const navigate = useNavigate();
+  const { user, logout } = useUser();
+
+  // Use user from context if available, otherwise fall back to props
+  const currentUserRole = user?.role || userRole;
+  const currentUserName = user?.name || userName;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <nav className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -28,34 +41,32 @@ export const Navigation = ({ userRole, userName }: NavigationProps) => {
           </Link>
 
           <div className="flex items-center space-x-4">
-            {userRole && (
+            {currentUserRole && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center space-x-2">
                     <User className="w-4 h-4" />
-                    <span className="hidden md:inline">{userName || "User"}</span>
+                    <span className="hidden md:inline">{currentUserName || "User"}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-card">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to={`/${userRole}`} className="cursor-pointer">
+                    <Link to={`/${currentUserRole}`} className="cursor-pointer">
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/" className="cursor-pointer text-destructive">
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Logout
-                    </Link>
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            
-            {!userRole && (
+
+            {!currentUserRole && (
               <div className="flex items-center space-x-2">
                 <Link to="/register">
                   <Button variant="outline">Register</Button>

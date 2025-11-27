@@ -2,9 +2,11 @@ import React from 'react';
 import { User, Mail, Lock, Eye, EyeOff, Activity } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Navigation } from "@/components/Navigation";
+import { useUser } from "@/contexts/UserContext";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { setUser } = useUser();
   const [formData, setFormData] = React.useState({
     fullName: '',
     email: '',
@@ -86,6 +88,9 @@ const Register = () => {
         const data = await response.json();
 
         if (response.ok) {
+          const data = await response.json();
+          // Store the access token
+          localStorage.setItem('access_token', data.access);
           alert('Registration successful! Redirecting...');
           // Redirect based on role
           if (formData.role === 'athlete') {
@@ -195,7 +200,7 @@ const Register = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 I am a
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, role: 'athlete' }))}
@@ -223,20 +228,6 @@ const Register = () => {
                 >
                   <div className="font-semibold">Coach</div>
                   <div className="text-xs text-gray-600 mt-1">Manage athletes</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, role: 'admin' }))}
-                  className={`
-                    p-4 border-2 rounded-lg text-center transition-all
-                    ${formData.role === 'admin'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 hover:border-gray-400'
-                    }
-                  `}
-                >
-                  <div className="font-semibold">Admin</div>
-                  <div className="text-xs text-gray-600 mt-1">Administer system</div>
                 </button>
               </div>
             </div>

@@ -3,17 +3,19 @@ import { Card } from "@/components/ui/card";
 import { adminStats } from "@/data/dummyData";
 import { Users, Activity, TrendingUp, AlertTriangle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { useUser } from "@/contexts/UserContext";
 
 const Admin = () => {
+  const { user } = useUser();
   return (
     <div className="min-h-screen bg-background">
-      <Navigation userRole="admin" userName="Admin" />
+      <Navigation />
       
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Admin Dashboard
+            Welcome back, {user?.name || "Admin"}!
           </h1>
           <p className="text-lg text-muted-foreground">
             Platform overview and system analytics

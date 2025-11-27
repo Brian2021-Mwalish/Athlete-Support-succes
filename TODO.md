@@ -1,6 +1,11 @@
-# TODO: Fix Django Login Error
+# TODO: Implement Global User Profile State Management
 
 ## Steps to Complete
-- [x] Add AUTH_USER_MODEL = 'accounts.CustomUser' to Backend/Athlete/Athlete/settings.py
-- [x] Run database migrations: cd Backend/Athlete && python manage.py migrate
-- [ ] Test the login endpoint to ensure the error is resolved
+- [ ] Create UserContext for global user profile state management
+- [ ] Update App.tsx to wrap with UserProvider
+- [ ] Update Login.tsx to set user data in context on successful login
+- [ ] Update Navigation.tsx to use context for user data
+- [ ] Update Athlete.tsx to use context instead of dummy data
+- [ ] Update StressMap.tsx to use context instead of dummy data
+- [ ] Test profile persistence across pages
+- [ ] Ensure authentication properly sets user data

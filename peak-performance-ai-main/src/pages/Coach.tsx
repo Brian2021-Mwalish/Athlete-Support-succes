@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { coachAthletes } from "@/data/dummyData";
 import { Users, TrendingUp, AlertTriangle, CheckCircle, Clock } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
 
 const Coach = () => {
+  const { user } = useUser();
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "success":
@@ -44,7 +47,7 @@ const Coach = () => {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Coach Dashboard
+            Welcome back, {user?.name || "Coach"}!
           </h1>
           <p className="text-lg text-muted-foreground">
             Monitor and manage your athletes' performance and wellbeing
