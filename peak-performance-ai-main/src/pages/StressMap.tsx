@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUser } from "@/contexts/UserContext";
+import { generateBodyStressData, getAthleteData } from "@/data/dummyData";
 import {
   Activity,
   AlertTriangle,
@@ -14,43 +15,38 @@ import {
   Heart,
   MapPin,
   TrendingUp,
-  Zap
+  Zap,
+  Play,
+  Pause
 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 const StressMap = () => {
   const { user } = useUser();
+  const [stressData, setStressData] = useState(() => generateBodyStressData(getAthleteData().metrics.stress));
+  const [isSimulationActive, setIsSimulationActive] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
-  // Mock stress data for different body parts
-  const stressData = {
-    front: {
-      head: { level: 25, fatigue: 20, jointLoad: 15, stress: 25 },
-      neck: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
-      shoulders: { level: 45, fatigue: 40, jointLoad: 35, stress: 45 },
-      chest: { level: 30, fatigue: 25, jointLoad: 20, stress: 30 },
-      arms: { level: 40, fatigue: 35, jointLoad: 30, stress: 40 },
-      elbows: { level: 50, fatigue: 45, jointLoad: 40, stress: 50 },
-      wrists: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
-      hands: { level: 30, fatigue: 25, jointLoad: 20, stress: 30 },
-      abdomen: { level: 25, fatigue: 20, jointLoad: 15, stress: 25 },
-      hips: { level: 55, fatigue: 50, jointLoad: 45, stress: 55 },
-      thighs: { level: 60, fatigue: 55, jointLoad: 50, stress: 60 },
-      knees: { level: 65, fatigue: 60, jointLoad: 55, stress: 65 },
-      shins: { level: 40, fatigue: 35, jointLoad: 30, stress: 40 },
-      ankles: { level: 45, fatigue: 40, jointLoad: 35, stress: 45 },
-      feet: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
-    },
-    back: {
-      head: { level: 25, fatigue: 20, jointLoad: 15, stress: 25 },
-      neck: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
-      upperBack: { level: 50, fatigue: 45, jointLoad: 40, stress: 50 },
-      midBack: { level: 40, fatigue: 35, jointLoad: 30, stress: 40 },
-      lowerBack: { level: 70, fatigue: 65, jointLoad: 60, stress: 70 },
-      glutes: { level: 55, fatigue: 50, jointLoad: 45, stress: 55 },
-      hamstrings: { level: 60, fatigue: 55, jointLoad: 50, stress: 60 },
-      calves: { level: 45, fatigue: 40, jointLoad: 35, stress: 45 },
-      heels: { level: 30, fatigue: 25, jointLoad: 20, stress: 30 },
-    }
-  };
+  // Update stress data periodically
+  useEffect(() => {
+    if (!isSimulationActive) return;
+
+    const interval = setInterval(() => {
+      const athleteData = getAthleteData();
+      setStressData(generateBodyStressData(athleteData.metrics.stress));
+      setLastUpdate(Date.now());
+    }, 8000); // Update every 8 seconds
+
+    return () => clearInterval(interval);
+  }, [isSimulationActive]);
+
+  // Function to simulate stress spike
+  const simulateStressSpike = useCallback(() => {
+    const athleteData = getAthleteData();
+    const spikedStress = Math.min(90, athleteData.metrics.stress + Math.floor(Math.random() * 20) + 10);
+    setStressData(generateBodyStressData(spikedStress));
+    setLastUpdate(Date.now());
+  }, []);
 
   const getStressColor = (level: number) => {
     // Human skin tone colors with stress overlay
@@ -66,26 +62,76 @@ const StressMap = () => {
     return "High";
   };
 
-  const recommendations = [
-    {
-      area: "Lower Back",
-      level: "High",
-      recommendation: "Reduce training volume by 20% and incorporate core strengthening exercises",
-      icon: Dumbbell
-    },
-    {
-      area: "Knees",
-      level: "High",
-      recommendation: "Focus on proper form during squats and lunges, consider adding knee support",
-      icon: Activity
-    },
-    {
-      area: "Shoulders",
-      level: "Medium",
-      recommendation: "Include shoulder mobility work and reduce overhead pressing volume",
-      icon: TrendingUp
+  // Dynamic recommendations based on current stress levels
+  const getDynamicRecommendations = () => {
+    const allBodyParts = { ...stressData.front, ...stressData.back };
+    const highStressAreas = Object.entries(allBodyParts)
+      .filter(([_, data]) => data.level >= 50)
+      .sort((a, b) => b[1].level - a[1].level)
+      .slice(0, 3);
+
+    const recommendations = [];
+
+    highStressAreas.forEach(([area, data]) => {
+      let recommendation = "";
+      let icon = Activity;
+
+      switch (area) {
+        case "lowerBack":
+          recommendation = "Reduce training volume by 20% and incorporate core strengthening exercises";
+          icon = Dumbbell;
+          break;
+        case "knees":
+          recommendation = "Focus on proper form during squats and lunges, consider adding knee support";
+          icon = Activity;
+          break;
+        case "shoulders":
+          recommendation = "Include shoulder mobility work and reduce overhead pressing volume";
+          icon = TrendingUp;
+          break;
+        case "hips":
+          recommendation = "Incorporate hip mobility exercises and reduce high-impact activities";
+          icon = Activity;
+          break;
+        case "thighs":
+          recommendation = "Include more recovery time between leg workouts and add foam rolling";
+          icon = Dumbbell;
+          break;
+        case "upperBack":
+          recommendation = "Focus on posture correction and include upper back strengthening";
+          icon = TrendingUp;
+          break;
+        case "neck":
+          recommendation = "Practice neck mobility exercises and improve sleeping posture";
+          icon = Activity;
+          break;
+        default:
+          recommendation = "Monitor closely and consider reducing training intensity in this area";
+          icon = AlertTriangle;
+      }
+
+      recommendations.push({
+        area: area.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()),
+        level: getStressLabel(data.level),
+        recommendation,
+        icon
+      });
+    });
+
+    // If no high stress areas, show general recommendations
+    if (recommendations.length === 0) {
+      recommendations.push({
+        area: "General",
+        level: "Low",
+        recommendation: "Maintain current training regimen and continue monitoring stress levels",
+        icon: CheckCircle
+      });
     }
-  ];
+
+    return recommendations;
+  };
+
+  const recommendations = getDynamicRecommendations();
 
   return (
     <TooltipProvider>
@@ -113,6 +159,46 @@ const StressMap = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {/* Simulation Controls */}
+                  <div className="mb-6 p-4 rounded-lg border border-border bg-muted/30">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-primary" />
+                        <h3 className="font-semibold">Live Simulation</h3>
+                      </div>
+                      <Badge variant={isSimulationActive ? "default" : "secondary"}>
+                        {isSimulationActive ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <Button
+                        onClick={() => setIsSimulationActive(!isSimulationActive)}
+                        variant={isSimulationActive ? "destructive" : "default"}
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        {isSimulationActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        {isSimulationActive ? "Stop Simulation" : "Start Simulation"}
+                      </Button>
+
+                      <Button
+                        onClick={simulateStressSpike}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Heart className="w-4 h-4" />
+                        Simulate Stress Spike
+                      </Button>
+
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="w-4 h-4" />
+                        Last Update: {new Date(lastUpdate).toLocaleTimeString()}
+                      </div>
+                    </div>
+                  </div>
+
                   <Tabs defaultValue="front" className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="front">Front View</TabsTrigger>
@@ -873,7 +959,6 @@ const StressMap = () => {
               </Card>
             </div>
 
-            {/* Recommendations */}
             <div>
               <Card>
                 <CardHeader>

@@ -153,13 +153,68 @@ export const coachAthletes = [
   },
 ];
 
+// Function to generate body-specific stress data based on overall stress level
+export const generateBodyStressData = (baseStress: number = 35) => {
+  // Base stress levels for different body parts (relative to overall stress)
+  const baseBodyStress = {
+    front: {
+      head: { level: 25, fatigue: 20, jointLoad: 15, stress: 25 },
+      neck: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
+      shoulders: { level: 45, fatigue: 40, jointLoad: 35, stress: 45 },
+      chest: { level: 30, fatigue: 25, jointLoad: 20, stress: 30 },
+      arms: { level: 40, fatigue: 35, jointLoad: 30, stress: 40 },
+      elbows: { level: 50, fatigue: 45, jointLoad: 40, stress: 50 },
+      wrists: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
+      hands: { level: 30, fatigue: 25, jointLoad: 20, stress: 30 },
+      abdomen: { level: 25, fatigue: 20, jointLoad: 15, stress: 25 },
+      hips: { level: 55, fatigue: 50, jointLoad: 45, stress: 55 },
+      thighs: { level: 60, fatigue: 55, jointLoad: 50, stress: 60 },
+      knees: { level: 65, fatigue: 60, jointLoad: 55, stress: 65 },
+      shins: { level: 40, fatigue: 35, jointLoad: 30, stress: 40 },
+      ankles: { level: 45, fatigue: 40, jointLoad: 35, stress: 45 },
+      feet: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
+    },
+    back: {
+      head: { level: 25, fatigue: 20, jointLoad: 15, stress: 25 },
+      neck: { level: 35, fatigue: 30, jointLoad: 25, stress: 35 },
+      upperBack: { level: 50, fatigue: 45, jointLoad: 40, stress: 50 },
+      midBack: { level: 40, fatigue: 35, jointLoad: 30, stress: 40 },
+      lowerBack: { level: 70, fatigue: 65, jointLoad: 60, stress: 70 },
+      glutes: { level: 55, fatigue: 50, jointLoad: 45, stress: 55 },
+      hamstrings: { level: 60, fatigue: 55, jointLoad: 50, stress: 60 },
+      calves: { level: 45, fatigue: 40, jointLoad: 35, stress: 45 },
+      heels: { level: 30, fatigue: 25, jointLoad: 20, stress: 30 },
+    }
+  };
+
+  // Apply overall stress modifier and randomization
+  const stressModifier = baseStress / 35; // Normalize to base stress of 35
+  const randomFactor = () => (Math.random() - 0.5) * 0.2; // ±10% randomization
+
+  const applyStressVariation = (bodyPart: any) => ({
+    level: Math.max(10, Math.min(100, Math.round(bodyPart.level * stressModifier * (1 + randomFactor())))),
+    fatigue: Math.max(10, Math.min(100, Math.round(bodyPart.fatigue * stressModifier * (1 + randomFactor())))),
+    jointLoad: Math.max(10, Math.min(100, Math.round(bodyPart.jointLoad * stressModifier * (1 + randomFactor())))),
+    stress: Math.max(10, Math.min(100, Math.round(bodyPart.stress * stressModifier * (1 + randomFactor())))),
+  });
+
+  return {
+    front: Object.fromEntries(
+      Object.entries(baseBodyStress.front).map(([key, value]) => [key, applyStressVariation(value)])
+    ),
+    back: Object.fromEntries(
+      Object.entries(baseBodyStress.back).map(([key, value]) => [key, applyStressVariation(value)])
+    ),
+  };
+};
+
 export const adminStats = {
   totalUsers: 1247,
   activeAthletes: 892,
   activeCoaches: 156,
   totalWorkouts: 15634,
   avgInjuryRisk: 42,
-  
+
   userGrowth: [
     { month: "Jan", users: 850 },
     { month: "Feb", users: 920 },
@@ -168,7 +223,7 @@ export const adminStats = {
     { month: "May", users: 1180 },
     { month: "Jun", users: 1247 },
   ],
-  
+
   riskDistribution: [
     { level: "Low Risk", count: 534, color: "hsl(var(--success))" },
     { level: "Medium Risk", count: 489, color: "hsl(var(--warning))" },
